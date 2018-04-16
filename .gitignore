@@ -1,0 +1,10 @@
+﻿
+/vsproc
+
+
+/pro/Particle/DebugConfig
+/pro/Particle/Listings
+/pro/Particle/Objects
+/pro/Particle/*.uvoptx
+/pro/Particle/*.uvguix.*
+*.TMP
