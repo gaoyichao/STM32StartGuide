@@ -1,6 +1,8 @@
 #include <stm32f407.h>
 #include <usart1.h>
 
+uint8 _usart1_is_sending = 0;
+uint8 _usart1_received_datas = 0;
 /*
  * usart1_init - 初始化串口
  */
@@ -25,30 +27,84 @@ void usart1_init(uint32 baudrate) {
     uart_init(USART1, baudrate);
 }
 
-void usart1_send_byte(uint8 value) {
-    USART1->DR.bits.byte = value;
-    while (!USART1->SR.bits.TXE);
+void usart1_init_dma(void) {
+    RCC->AHB1ENR.bits.dma2 = 1;
+    // 发送DMA
+    DMA_ResetStream(DMA2_Stream7);
+    DMA2_Stream7->CR.bits.CHSEL = 4;                // 通道选择
+    DMA2_Stream7->CR.bits.DIR = DMA_DIR_M2P;        // 传输方向
+    DMA2_Stream7->CR.bits.CIRC = 0;                 // 关闭循环模式
+    DMA2_Stream7->CR.bits.PL = DMA_Priority_Low;    // 低优先级
+    DMA2_Stream7->CR.bits.PINC = 0;                 // 外设地址不增长
+    DMA2_Stream7->CR.bits.PSIZE = DMA_PSIZE_8Bits;  // 外设数据宽度
+    DMA2_Stream7->CR.bits.MINC = 1;                 // 内存增长
+    DMA2_Stream7->CR.bits.MSIZE = DMA_PSIZE_8Bits;  // 内存数据宽度
+    DMA2_Stream7->CR.bits.MBURST = DMA_Burst_0;     // Single Transfer
+    DMA2_Stream7->CR.bits.PBURST = DMA_Burst_0;     // Single Transfer
+    DMA2_Stream7->FCR.bits.DMDIS = 0;               // 保持Direct Mode
+    DMA2_Stream7->FCR.bits.FTH = DMA_FIFO_4;
+    DMA2_Stream7->PAR = (uint32)(&(USART1->DR));
+    DMA2_Stream7->CR.bits.TCIE = 1;
+    // 接收DMA
+    DMA_ResetStream(DMA2_Stream5);
+    DMA2_Stream5->CR.bits.CHSEL = 4;                // 通道选择
+    DMA2_Stream5->CR.bits.DIR = DMA_DIR_P2M;        // 传输方向
+    DMA2_Stream5->CR.bits.CIRC = 0;                 // 关闭循环模式
+    DMA2_Stream5->CR.bits.PL = DMA_Priority_Low;    // 低优先级
+    DMA2_Stream5->CR.bits.PINC = 0;                 // 外设地址不增长
+    DMA2_Stream5->CR.bits.PSIZE = DMA_PSIZE_8Bits;  // 外设数据宽度
+    DMA2_Stream5->CR.bits.MINC = 1;                 // 内存增长
+    DMA2_Stream5->CR.bits.MSIZE = DMA_PSIZE_8Bits;  // 内存数据宽度
+    DMA2_Stream5->CR.bits.MBURST = DMA_Burst_0;     // Single Transfer
+    DMA2_Stream5->CR.bits.PBURST = DMA_Burst_0;     // Single Transfer
+    DMA2_Stream5->FCR.bits.DMDIS = 0;               // 保持Direct Mode
+    DMA2_Stream5->FCR.bits.FTH = DMA_FIFO_4;
+    DMA2_Stream5->PAR = (uint32)(&(USART1->DR));
+    DMA2_Stream5->CR.bits.TCIE = 1;
 }
 
-void usart1_send_bytes(const uint8 *buf, uint32 len) {
-    for (uint32 i = 0; i < len; i++) {
-        USART1->DR.bits.byte = buf[i];
-        while (!USART1->SR.bits.TXE);
+void usart1_send_bytes_dma(uint8 *buf, int len) {
+    while (_usart1_is_sending);
+    
+    _usart1_is_sending = 1;
+    
+    DMA2_Stream7->CR.bits.EN = 0;
+    DMA2_Stream7->M0AR = (uint32)buf;
+    DMA2_Stream7->NDTR.all = len;
+    DMA2_Stream7->CR.bits.EN = 1;
+    
+    USART1->CR3.bits.DMAT = 1;
+}
+
+void usart1_receive_bytes_dma(uint8 *buf, int len) {
+    DMA2_Stream5->CR.bits.EN = 0;
+    DMA2_Stream5->M0AR = (uint32)buf;
+    DMA2_Stream5->NDTR.all = len;
+    DMA2_Stream5->CR.bits.EN = 1;
+    
+    USART1->CR3.bits.DMAR = 1;
+}
+
+void DMA2_Stream5_IRQHandler(void) {
+    if (1 == DMA2->HISR.bits.TCIF5) {
+        DMA2->HIFCR.bits.TCIF5 = 1;
+        USART1->CR3.bits.DMAR = 0;
+        _usart1_received_datas = 1;
     }
 }
 
-void usart1_send_str(const uint8 *str) {
-    while ('\0' != str[0]) {
-        USART1->DR.bits.byte = str[0];
-        while (!USART1->SR.bits.TXE);
-        str++;
+void DMA2_Stream7_IRQHandler(void) {
+    if (1 == DMA2->HISR.bits.TCIF7) {
+        DMA2->HIFCR.bits.TCIF7 = 1;
+        USART1->CR3.bits.DMAT = 0;
+        _usart1_is_sending = 0;
     }
 }
 
 void USART1_IRQHandler(void) {
     if (0 != USART1->SR.bits.RXNE) {
-        uint8 data = USART1->DR.bits.byte;
-        usart1_send_byte(data);
+        //uint8 data = USART1->DR.bits.byte;
+        //uart_send_byte(USART1, data);
     }
 }
 

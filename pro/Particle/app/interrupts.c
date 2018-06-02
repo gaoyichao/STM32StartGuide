@@ -6,4 +6,10 @@ void config_interruts(void) {
 
     NVIC->IPR.bits.USART1_Irq = 0x80;
     NVIC->ISER.bits.USART1_Irq = 1;
+    
+    NVIC->IPR.bits.DMA2_Stream7_Irq = 0x80;
+    NVIC->ISER.bits.DMA2_Stream7_Irq = 1;
+    
+    NVIC->IPR.bits.DMA2_Stream5_Irq = 0x80;
+    NVIC->ISER.bits.DMA2_Stream5_Irq = 1;
 }
