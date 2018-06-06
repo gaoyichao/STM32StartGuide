@@ -30,7 +30,7 @@ void usart1_init(uint32 baudrate) {
 void usart1_init_dma(void) {
     RCC->AHB1ENR.bits.dma2 = 1;
     // 发送DMA
-    DMA_ResetStream(DMA2_Stream7);
+    dma_reset_stream(DMA2_Stream7);
     DMA2_Stream7->CR.bits.CHSEL = 4;                // 通道选择
     DMA2_Stream7->CR.bits.DIR = DMA_DIR_M2P;        // 传输方向
     DMA2_Stream7->CR.bits.CIRC = 0;                 // 关闭循环模式
@@ -46,7 +46,7 @@ void usart1_init_dma(void) {
     DMA2_Stream7->PAR = (uint32)(&(USART1->DR));
     DMA2_Stream7->CR.bits.TCIE = 1;
     // 接收DMA
-    DMA_ResetStream(DMA2_Stream5);
+    dma_reset_stream(DMA2_Stream5);
     DMA2_Stream5->CR.bits.CHSEL = 4;                // 通道选择
     DMA2_Stream5->CR.bits.DIR = DMA_DIR_P2M;        // 传输方向
     DMA2_Stream5->CR.bits.CIRC = 0;                 // 关闭循环模式

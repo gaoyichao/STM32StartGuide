@@ -462,6 +462,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\lib\stm32\src\stm32f4xx_dma.c</FilePath>
             </File>
+            <File>
+              <FileName>stm32f4xx_dcmi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\lib\stm32\src\stm32f4xx_dcmi.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -486,6 +491,31 @@
               <FileName>i2c1.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\board\src\i2c1.c</FilePath>
+            </File>
+            <File>
+              <FileName>sccb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\board\src\sccb.c</FilePath>
+            </File>
+            <File>
+              <FileName>ov2640.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\board\src\ov2640.c</FilePath>
+            </File>
+            <File>
+              <FileName>dcmi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\board\src\dcmi.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>libutils</GroupName>
+          <Files>
+            <File>
+              <FileName>utils.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\lib\utils\src\utils.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -23,7 +23,7 @@ void uart_init(usart_regs_t *uart, uint32 baudrate) {
     uart->BRR.bits.mantissa = mantissa;
     uart->BRR.bits.fraction = fraction;
 
-    uart->CR1.bits.RXNEIE = 1; // 开启接收中断
+    //uart->CR1.bits.RXNEIE = 1; // 开启接收中断
     uart->CR1.bits.UE = 1;     // 开启串口
 }
 

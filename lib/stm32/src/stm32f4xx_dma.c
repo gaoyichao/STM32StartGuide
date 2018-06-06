@@ -1,6 +1,6 @@
 #include <stm32f4xx_dma.h>
 
-void DMA_ResetStream(dma_stream_regs_t *ds) {
+void dma_reset_stream(dma_stream_regs_t *ds) {
     ds->CR.bits.EN = 0;
 
     ds->CR.all = 0;

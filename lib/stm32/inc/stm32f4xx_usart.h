@@ -3,7 +3,8 @@
  * stm32f4xx_usart - 串口
  *
  ************************************** 高乙超.2017.0131 ***/
-#pragma once
+#ifndef STM32F4XX_USART_H
+#define STM32F4XX_USART_H
 
 #include <types.h>
 
@@ -11,37 +12,37 @@ struct usart_sr_bits {
     // PE - 奇偶校验错误，由硬件置位。
     // 软件通过先读SR寄存器，再读/写DR寄存器，可以清除该位;
     // 但在清除该位之前，必须等待RXNE位置位。
-    uint16 PE : 1;
+    uint32 PE : 1;
     // FE - 帧错误，检测到不同步、噪声过大、或者接收到Bread帧时，有硬件置位。
     // 软件通过先读SR,再读DR寄存器清除该位。
     // 如果当前正在处理的数据，即产生了帧错误，又产生Overrun错误，那么数据将会被传送，同时只有ORE位置位。
-    uint16 FE : 1;
+    uint32 FE : 1;
     // NF - 噪声标志位，硬件置位。
     // 软件通过先读SR，再读DR寄存器清除该位
-    uint16 NF : 1;
+    uint32 NF : 1;
     // ORE - Overrun错误，当RXNE=1时，接收移位寄存器就已经完成接收新数据，并发送到RDR(读数据)寄存器中。
     // 软件通过先读SR,再读DR寄存器清除该位。
-    uint16 ORE : 1;
+    uint32 ORE : 1;
     // IDLE - 硬件检测到Idle Line时置位，
     // 软件通过先读SR,再读DR寄存器清除该位。
-    uint16 IDLE : 1;
+    uint32 IDLE : 1;
     // RXNE - 读数据寄存器非空，硬件置位
     // 软件读DR寄存器就可以清除该位，但也可以通过直接向该位写0清空
-    uint16 RXNE : 1;
+    uint32 RXNE : 1;
     // TC - Transmission Complete, 发送完一帧并且TXE = 1时置位
     // 软件通过先读SR寄存器，再写DR寄存器，可以清除该位;但也可以通过直接向该位写0清空
-    uint16 TC : 1;
+    uint32 TC : 1;
     // TXE - 发送数据寄存器为空，当TDR寄存器中的数据写入发送移位寄存器时置位。
     // 软件写DR寄存器清除该位。
-    uint16 TXE : 1;
+    uint32 TXE : 1;
     // LBD - LIN Bread Detection,
     // 软件写0清除
-    uint16 LBD : 1;
+    uint32 LBD : 1;
     // CTS - 当输入CTS翻转时置位
     // 软件写0清除
-    uint16 CTS : 1;
-    uint16 rsv0 : 6;
-    uint16 rsv1 : 16;
+    uint32 CTS : 1;
+    uint32 rsv0 : 6;
+    uint32 rsv1 : 16;
 };
 
 union usart_sr {
@@ -50,9 +51,9 @@ union usart_sr {
 };
 
 struct usart_dr_bits {
-    uint16 byte : 8;
-    uint16 rsv0 : 8;
-    uint16 rsv1 : 16;
+    uint32 byte : 8;
+    uint32 rsv0 : 8;
+    uint32 rsv1 : 16;
 };
 
 union usart_dr {
@@ -71,10 +72,10 @@ union usart_dr {
  */
 struct usart_brr_bits {
     // DIV的小数部分
-    uint16 fraction : 4;
+    uint32 fraction : 4;
     // DIV的整数部分
-    uint16 mantissa : 12;
-    uint16 rsv : 16;
+    uint32 mantissa : 12;
+    uint32 rsv : 16;
 };
 
 union usart_brr {
@@ -84,38 +85,38 @@ union usart_brr {
 
 struct usart_cr1_bits {
     // SBK - Send BreaK
-    uint16 SBK : 1;
+    uint32 SBK : 1;
     // RWU - Receive WakeUp, 由软件置位复位, 决定串口是否处于mute模式
-    uint16 RWU : 1;
+    uint32 RWU : 1;
     // RE - 使能接收器
-    uint16 RE : 1;
+    uint32 RE : 1;
     // TE - 使能发送器
-    uint16 TE : 1;
+    uint32 TE : 1;
     // IDLEIE - 使能IDLE中断
-    uint16 IDLEIE : 1;
+    uint32 IDLEIE : 1;
     // RXNEIE - 使能接收中断
-    uint16 RXNEIE : 1;
+    uint32 RXNEIE : 1;
     // TCIE - 发送完成中断使能
-    uint16 TCIE : 1;
+    uint32 TCIE : 1;
     // TXEIE - TXE中断使能
-    uint16 TXEIE : 1;
+    uint32 TXEIE : 1;
     // PEIE - 奇偶校验中断使能
-    uint16 PEIE : 1;
+    uint32 PEIE : 1;
     // PS - 奇偶校验方式选择, 0:Even, 1:Odd,奇数
-    uint16 PS : 1;
+    uint32 PS : 1;
     // PCE - 奇偶校验使能
-    uint16 PCE : 1;
+    uint32 PCE : 1;
     // WAKE - 唤醒方式，0:Idle Line, 1: 地址唤醒
-    uint16 WAKE : 1;
+    uint32 WAKE : 1;
     // M - 帧字长，0:1起始位，8数据位，n停止位
     // 1: 1起始位， 9数据位，n停止位
-    uint16 M : 1;
+    uint32 M : 1;
     // UE - USART使能
-    uint16 UE : 1;
-    uint16 rsv0 : 1;
+    uint32 UE : 1;
+    uint32 rsv0 : 1;
     // OVER8 - 重采样方式，0：16次采样, 1:8次采样
-    uint16 OVER8 : 1;
-    uint16 rsv1 : 16;
+    uint32 OVER8 : 1;
+    uint32 rsv1 : 16;
 };
 
 union usart_cr1 {
@@ -129,29 +130,29 @@ union usart_cr1 {
 #define USART_STOP_1_5bit 0x03
 struct usart_cr2_bits {
     // 串口组网的地址
-    uint16 add : 4;
-    uint16 rsv0 : 1;
+    uint32 add : 4;
+    uint32 rsv0 : 1;
     // LBDL - LIN break detection length, 0:10-bit, 1:11-bit
-    uint16 LBDL : 1;
+    uint32 LBDL : 1;
     // LBDIE - LIN break detection 中断使能
-    uint16 LBDIE : 1;
-    uint16 rsv1 : 1;
+    uint32 LBDIE : 1;
+    uint32 rsv1 : 1;
     // LBCL - Last Bit Clock Pulse, 在同步模式下，发送MSB时，CK引脚是否反应MSB
-    uint16 LBCL : 1;
+    uint32 LBCL : 1;
     // CPHA - Clock Phase, 同步模式下，决定什么时候获取数据
     // 0: 第一个时钟跳变沿是第一次获取数据的时钟沿
     // 1: 第二个时钟跳变沿是第一次获取数据的时钟沿
-    uint16 CPHA : 1;
+    uint32 CPHA : 1;
     // CPOL - Clock Polarity, 同步模式下，CK引脚的稳态电平，0:steady low, 1:steady high
-    uint16 CPOL : 1;
+    uint32 CPOL : 1;
     // CLKEN - 时钟使能
-    uint16 CLKEN : 1;
+    uint32 CLKEN : 1;
     // STOP - 停止位长，2'b00:1bit, 2'01:0.5bit, 2'10:2bit, 2'11:1.5bit
-    uint16 STOP : 2;
+    uint32 STOP : 2;
     // LINEN - LIN模式开启
-    uint16 LINEN : 1;
-    uint16 rsv2 : 1;
-    uint16 rsv3 : 16;
+    uint32 LINEN : 1;
+    uint32 rsv2 : 1;
+    uint32 rsv3 : 16;
 };
 
 union usart_cr2 {
@@ -161,31 +162,31 @@ union usart_cr2 {
 
 struct usart_cr3_bits {
     // EIE - 错误中断使能
-    uint16 EIE : 1;
+    uint32 EIE : 1;
     // IREN - 开启IrDA模式
-    uint16 IREN : 1;
+    uint32 IREN : 1;
     // IRLP - IrDA低电压模式
-    uint16 IRLP : 1;
+    uint32 IRLP : 1;
     // HDSEL - 半双工模式选择
-    uint16 HDSEL : 1;
+    uint32 HDSEL : 1;
     // NACK - Smartcard模式下，该位置1时开启奇偶校验，如果出错接收方会返回一个NACK信号
-    uint16 NACK : 1;
+    uint32 NACK : 1;
     // SCEN - Smartcard模式开启
-    uint16 SCEN : 1;
+    uint32 SCEN : 1;
     // DMAR - 接收数据采用DMA方式
-    uint16 DMAR : 1;
+    uint32 DMAR : 1;
     // DMAT - 发送数据采用DMA方式
-    uint16 DMAT : 1;
+    uint32 DMAT : 1;
     // RTSE - RTS Enable,流控制
-    uint16 RTSE : 1;
+    uint32 RTSE : 1;
     // CTSE - CTS Enable,流控制
-    uint16 CTSE : 1;
+    uint32 CTSE : 1;
     // CTSIE - CTS中断使能,流控制
-    uint16 CTSIE : 1;
+    uint32 CTSIE : 1;
     // ONEBIT - 位采样方式,0:三次采样,1:1次采样
-    uint16 ONEBIT : 1;
-    uint16 rsv0 : 4;
-    uint16 rsv1 : 16;
+    uint32 ONEBIT : 1;
+    uint32 rsv0 : 4;
+    uint32 rsv1 : 16;
 };
 
 union usart_cr3 {
@@ -194,9 +195,9 @@ union usart_cr3 {
 };
 
 struct usart_gtpr_bits {
-    uint16 PSC : 8;
-    uint16 GT : 8;
-    uint16 rsv0 : 16;
+    uint32 PSC : 8;
+    uint32 GT : 8;
+    uint32 rsv0 : 16;
 };
 
 union usart_gtpr {
@@ -235,3 +236,4 @@ void uart_send_byte(usart_regs_t *uart, uint8 value);
 void uart_send_bytes(usart_regs_t *uart, const uint8 *buf, uint32 len);
 void uart_send_str(usart_regs_t *uart, const uint8 *str);
 
+#endif

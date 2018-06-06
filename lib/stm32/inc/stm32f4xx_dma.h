@@ -221,12 +221,12 @@ union dma_sxfcr {
 };
 
 typedef struct dma_stream_regs {
-    union dma_sxcr CR;      /* DMA stream x 配置寄存器      */
-    union dma_sxndtr NDTR;  /* DMA stream x 待发送数据寄存器 */
-    uint32 PAR;             /* DMA stream x 外设地址寄存器(32bit) */
-    uint32 M0AR;            /* DMA stream x 内存0地址寄存器(32bit) */
-    uint32 M1AR;            /* DMA stream x 内存1地址寄存器(32bit),只在double buffer时有用 */
-    union dma_sxfcr FCR;    /* DMA stream x FIFO控制寄存器 */
+    volatile union dma_sxcr CR;      /* DMA stream x 配置寄存器      */
+    volatile union dma_sxndtr NDTR;  /* DMA stream x 待发送数据寄存器 */
+    volatile uint32 PAR;             /* DMA stream x 外设地址寄存器(32bit) */
+    volatile uint32 M0AR;            /* DMA stream x 内存0地址寄存器(32bit) */
+    volatile uint32 M1AR;            /* DMA stream x 内存1地址寄存器(32bit),只在double buffer时有用 */
+    volatile union dma_sxfcr FCR;    /* DMA stream x FIFO控制寄存器 */
 } dma_stream_regs_t;
 
 typedef struct dma_regs {
@@ -276,7 +276,7 @@ typedef struct dma_regs {
 #define DMA2_Stream6 ((dma_stream_regs_t *)DMA2_Stream6_BASE)
 #define DMA2_Stream7 ((dma_stream_regs_t *)DMA2_Stream7_BASE)
 
-void DMA_ResetStream(dma_stream_regs_t *ds);
+void dma_reset_stream(dma_stream_regs_t *ds);
 
 
 
