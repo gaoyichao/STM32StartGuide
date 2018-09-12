@@ -152,6 +152,15 @@ union rcc_ahb2enr {
     uint32 all;
 };
 
+struct rcc_ahb3enr_bits {
+    uint32 fsmc : 1;
+    uint32 r1_31 : 31;
+};
+union rcc_ahb3enr {
+    struct rcc_ahb3enr_bits bits;
+    uint32 all;
+};
+
 struct rcc_apb1r_bits {
     uint32 tim2 : 1;
     uint32 tim3 : 1;
@@ -236,7 +245,7 @@ typedef struct rcc_regs {
     uint32  RESERVED1[2];           /* 保留, 0x28-0x2C */
     volatile union rcc_ahb1enr AHB1ENR;       /* AHB1外设时钟使能寄存器, offset: 0x30 */
     volatile union rcc_ahb2enr AHB2ENR;       /* AHB2外设时钟使能寄存器, offset: 0x34 */
-    volatile uint32 AHB3ENR;       /* AHB3外设时钟使能寄存器, offset: 0x38 */
+    volatile union rcc_ahb3enr AHB3ENR;       /* AHB3外设时钟使能寄存器, offset: 0x38 */
     uint32 RESERVED2;               /* 保留, 0x3C */
     volatile union rcc_apb1r APB1ENR;       /* APB1外设时钟使能寄存器, offset: 0x40 */
     volatile union rcc_apb2r APB2ENR;       /* APB2外设时钟使能寄存器, offset: 0x44 */
