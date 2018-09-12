@@ -5,39 +5,55 @@
 
 void config_interruts(void);
 
+void led_pwmio_init(void) {
+    RCC->AHB1ENR.bits.gpiof = 1;
+    // 功能选择, TIM14的通道1
+    GPIOF->AFR.bits.pin9 = 0x09;
+    GPIOF->MODER.bits.pin9 = GPIO_Mode_Af;
+    GPIOF->OTYPER.bits.pin9 = GPIO_OType_PP;
+    GPIOF->PUPDR.bits.pin9 = GPIO_Pull_Up;
+    GPIOF->OSPEEDR.bits.pin9 = GPIO_OSpeed_Very_High;
+}
 
 /*
-* tim3_init - 初始化TIM3, 挂在慢速总线APB1上,驱动频率最高为42MHz
-*
-* @pres: 预分频系数
-* @period: 计数周期
+* led_pwm_init - 初始化PWM控制的三色灯
 */
-void tim3_init(uint16 pres, uint16 period) {
-    RCC->APB1ENR.bits.tim3 = 1;
-    TIM3->CR1.bits.DIR = TIM_COUNT_DIR_UP;
-    TIM3->PSC = pres;
-    TIM3->ARR = period;
-    TIM3->EGR.bits.UG = 1;
+void led_pwm_init(void) {
+    RCC->APB1ENR.bits.tim14 = 1;
 
-    TIM3->DIER.bits.UIE = 1;
-    TIM3->CR1.bits.CEN = 1;
+    TIM14->CR1.bits.DIR = TIM_COUNT_DIR_UP;
+    TIM14->PSC = 4999;
+    TIM14->ARR = 255;
+    TIM14->CR1.bits.ARPE = 1;
+
+    union timer_chanel_mode cfg;
+    cfg.oc.OCxM = TIM_OCMode_PWM2;
+    cfg.oc.OCxPE = 1;
+    union timer_chanel_en cen;
+    cen.bits.CCxE = 1;
+    cen.bits.CCxNE = 0;
+    cen.bits.CCxP = 0;
+    cen.bits.CCxNP = 0;
+
+    timer_set_ccmr(TIM14, 1, cfg);
+    timer_set_ccer(TIM14, 1, cen);
+
+    TIM14->CCR1 = 0;
+    TIM14->CR1.bits.CEN = 1;
 }
 
-void TIM3_IRQHandler(void) {
-    if (1 == TIM3->SR.bits.UIF) {
-        LED_0 = ~LED_0;
-    }
-    TIM3->SR.bits.UIF = 0;
+void led_set_bright(uint8 r) {
+    TIM14->CCR1 = r;
 }
+
 
 int main(void) {
-    tim3_init(42000, 1000);
-    led_init();
+    led_pwmio_init();
+    led_pwm_init();
 
     config_interruts();
     
-    LED_0 = LED_ON;
-    LED_1 = LED_ON;
+    led_set_bright(2);
 
     while (1) {
 

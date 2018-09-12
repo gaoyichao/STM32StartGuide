@@ -467,6 +467,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\lib\stm32\src\stm32f4xx_dcmi.c</FilePath>
             </File>
+            <File>
+              <FileName>stm32f4xx_timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\lib\stm32\src\stm32f4xx_timer.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
