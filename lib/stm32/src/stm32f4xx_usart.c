@@ -2,7 +2,13 @@
 #include <stm32f407.h>
 
 void uart_init(usart_regs_t *uart, uint32 baudrate) {
-    uint32 tmp, mantissa, fraction;
+    uint32 tmp;
+    // TODO: 在写计时器输入捕获测量频率的例程时发现
+    // 不知道什么原因在main一开始调用uart_init的时候会导致Tim8无法输出PWM
+    // 经定位发现__mantissa和__fraction两个变量的修改会复现问题
+    // 猜测这两个变量的修改无意间修改了Tim8的寄存器,故用static修饰之,问题得以解决
+    // 猜测是否正确没有进一步验证
+    static uint32 __mantissa, __fraction;
 
     uart->CR1.bits.M = 0;      // 8数据位
     uart->CR1.bits.PCE = 0;    // 无奇偶校验
@@ -14,14 +20,17 @@ void uart_init(usart_regs_t *uart, uint32 baudrate) {
     uart->CR3.bits.RTSE = 0;
 
     uart->CR1.bits.OVER8 = 0;  // 起始位16次重采样，并依此计算波特率
+
     if (uart == USART1)
         tmp = (FRE_APB2 / 4) * 25 / baudrate;
     else
         tmp = (25 * FRE_APB1) / (4 * baudrate);
-    mantissa = tmp / 100;
-    fraction = (16 * (tmp - 100 * mantissa) + 50) / 100;
-    uart->BRR.bits.mantissa = mantissa;
-    uart->BRR.bits.fraction = fraction;
+
+    __mantissa = tmp / 100;
+    __fraction = (16 * (tmp - 100 * __mantissa) + 50) / 100;
+
+    uart->BRR.bits.mantissa = __mantissa;
+    uart->BRR.bits.fraction = __fraction;
 
     //uart->CR1.bits.RXNEIE = 1; // 开启接收中断
     uart->CR1.bits.UE = 1;     // 开启串口

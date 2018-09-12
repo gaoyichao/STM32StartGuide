@@ -101,10 +101,3 @@ void DMA2_Stream7_IRQHandler(void) {
     }
 }
 
-void USART1_IRQHandler(void) {
-    if (0 != USART1->SR.bits.RXNE) {
-        //uint8 data = USART1->DR.bits.byte;
-        //uart_send_byte(USART1, data);
-    }
-}
-
