@@ -5,104 +5,69 @@
 
 void config_interruts(void);
 
-void tim8_ch1_pwmio(void) {
-    RCC->AHB1ENR.bits.gpioc = 1;
-
-    GPIOC->AFR.bits.pin6 = GPIO_AF_TIM8;
-    GPIOC->MODER.bits.pin6 = GPIO_Mode_Af;
-    GPIOC->OTYPER.bits.pin6 = GPIO_OType_PP;
-    GPIOC->PUPDR.bits.pin6 = GPIO_Pull_Up;
-    GPIOC->OSPEEDR.bits.pin6 = GPIO_OSpeed_Very_High;
-}
-
-/*
-* led_pwm_init - 初始化PWM控制的三色灯
-*/
-void tim8_ch1_pwm(void) {
-    RCC->APB2ENR.bits.tim8 = 1;
-    TIM8->CR1.bits.DIR = TIM_COUNT_DIR_UP;
-    TIM8->PSC = 167;
-    TIM8->ARR = 999;
-    TIM8->EGR.bits.UG = 1;
-    TIM8->DIER.bits.UIE = 1;
-
-    TIM8->CR1.bits.ARPE = 1;
-
-    union timer_chanel_mode cfg;
-    cfg.oc.OCxM = TIM_OCMode_PWM2;
-    cfg.oc.OCxPE = 1;
-    union timer_chanel_en cen;
-    cen.bits.CCxE = 1;
-    cen.bits.CCxNE = 0;
-    cen.bits.CCxP = 0;
-    cen.bits.CCxNP = 0;
-
-    timer_set_ccmr(TIM8, 1, cfg);
-
-    timer_set_ccer(TIM8, 1, cen);
-
-    TIM8->CR2.bits.OIS1 = 0;
-
-    TIM8->CCR1 = 0;
-    TIM8->CR1.bits.CEN = 1;
-    TIM8->BDTR.bits.MOE = 1;
-}
-
-void tim1_init(void) {
-    RCC->APB2ENR.bits.tim1 = 1;
-    // 时机单元
-    TIM1->CR1.bits.DIR = TIM_COUNT_DIR_UP;
-    TIM1->PSC = 167;
-    TIM1->ARR = 65535;
-    TIM1->EGR.bits.CC1G = 1;
-    TIM1->EGR.bits.CC2G = 1;
-    TIM1->CR1.bits.ARPE = 1;
-    // PA8 : TIM1CH1
+void adc_gpio_init() {
     RCC->AHB1ENR.bits.gpioa = 1;
-    GPIOA->AFR.bits.pin8 = GPIO_AF_TIM1;
-    GPIOA->MODER.bits.pin8 = GPIO_Mode_Af;
-    GPIOA->OTYPER.bits.pin8 = GPIO_Pull_No;
-    GPIOA->OSPEEDR.bits.pin8 = GPIO_OType_OD;
-    // 输入通道1
-    union timer_chanel_mode cfg;
-    cfg.ic.CCxS = TIM_Channel_Mode_Input1;
-    cfg.ic.ICxPSC = TIM_ICMode_PSC_0;
-    cfg.ic.ICxF = 0xF;
-    union timer_chanel_en cen;
-    cen.bits.CCxE = 1;
-    cen.bits.CCxP = 0;
-    cen.bits.CCxNP = 0;
-    timer_set_ccmr(TIM1, 1, cfg);
-    timer_set_ccer(TIM1, 1, cen);
-    // 输入通道2
-    cfg.byte = 0;
-    cfg.ic.CCxS = TIM_Channel_Mode_Input2;
-    cfg.ic.ICxPSC = TIM_ICMode_PSC_0;
-    cfg.ic.ICxF = 0xF;
-    cen.all = 0;
-    cen.bits.CCxE = 1;
-    cen.bits.CCxP = 1;
-    cen.bits.CCxNP = 0;
-    timer_set_ccmr(TIM1, 2, cfg);
-    timer_set_ccer(TIM1, 2, cen);
-    // 使能中断
-    TIM1->DIER.bits.CC1IE = 1;
-    TIM1->CR1.bits.CEN = 1;
+    GPIOA->MODER.bits.pin0 = GPIO_Mode_Analog;
+    GPIOA->PUPDR.bits.pin0 = GPIO_Pull_No;
+    GPIOA->MODER.bits.pin1 = GPIO_Mode_Analog;
+    GPIOA->PUPDR.bits.pin1 = GPIO_Pull_No;
 }
 
-uint32 gDuring = 0;
-uint32 gDuty = 0;
-void TIM1_CC_IRQHandler(void) {
-    if (1 == TIM1->SR.bits.CC1IF) {
-        gDuty = TIM1->CCR2;
-        gDuring = TIM1->CCR1;
-        TIM1->CNT = 0;
-    }
-    TIM1->SR.bits.CC1IF = 0;
+void adc_dma_init(uint16 *buf) {
+    RCC->AHB1ENR.bits.dma2 = 1;
+    // DMA2_Stream0_Channel0 -> ADC1
+    dma_reset_stream(DMA2_Stream0);
+    DMA2_Stream0->CR.bits.CHSEL = 0;                // 通道选择
+    DMA2_Stream0->CR.bits.DIR = DMA_DIR_P2M;        // 传输方向
+    DMA2_Stream0->CR.bits.CIRC = 1;                 // 打开循环模式
+    DMA2_Stream0->CR.bits.PL = DMA_Priority_Low;    // 低优先级
+    DMA2_Stream0->CR.bits.PINC = 0;                 // 外设地址不增长
+    DMA2_Stream0->CR.bits.PSIZE = DMA_PSIZE_16Bits; // 外设数据宽度
+    DMA2_Stream0->CR.bits.MINC = 1;                 // 内存增长
+    DMA2_Stream0->CR.bits.MSIZE = DMA_PSIZE_16Bits; // 内存数据宽度
+    DMA2_Stream0->CR.bits.MBURST = DMA_Burst_0;     // Single Transfer
+    DMA2_Stream0->CR.bits.PBURST = DMA_Burst_0;     // Single Transfer
+    DMA2_Stream0->FCR.bits.DMDIS = 0;               // 保持Direct Mode
+    DMA2_Stream0->FCR.bits.FTH = DMA_FIFO_2;
+    DMA2_Stream0->PAR = (uint32)(&(ADC1->DR));      // 指定外设地址
+    DMA2_Stream0->M0AR = (uint32)buf;               // 指定内存地址
+    DMA2_Stream0->NDTR.all = 2;                     // 
+    
+    DMA2_Stream0->CR.bits.EN = 1;
 }
 
+void adc_init(uint16 *buf) {
+    adc_gpio_init();
+    adc_dma_init(buf);
+    
+    RCC->APB2ENR.bits.adc1 = 1;
+    
+    ADC_COM->CCR.bits.MULTI = ADC_Mode_Independent;         // ADC独立工作
+    ADC_COM->CCR.bits.ADCPRE = ADC_Prescaler_Div2;          // 分频系数
+    ADC_COM->CCR.bits.DMA = ADC_DMA_Mode1;                  // 开启DMA
+    ADC_COM->CCR.bits.DELAY = ADC_SamplingDelay_5Cycles;    // 两个采样工作之间的时间间隔
+    
+    ADC1->CR1.bits.RES = ADC_RES_12Bits;                    // 分辨率
+    ADC1->CR1.bits.SCAN = 1;                                // 开启SCAN模式
+    ADC1->CR2.bits.CONT = 1;                                // 开启连续转换模式
+    ADC1->CR2.bits.EXTEN = ADC_ExtTrigger_Dis;              // 禁止触发检测
+    ADC1->CR2.bits.ALIGN = ADC_Align_Right;                 // 右对齐
+    ADC1->SQR1.bits.L = 2 - ADC_SQR_LOffset;                // 2个转换在规则序列中
+
+    ADC1->SMPR2.bits.SMP0 = ADC_Sample_Time_3Cycles;         // 采样频率
+    ADC1->SMPR2.bits.SMP1 = ADC_Sample_Time_3Cycles;
+    
+    ADC1->SQR3.bits.SQ1 = 0;                                // 依次转换0,1两个通道
+    ADC1->SQR3.bits.SQ2 = 1;
+    
+    ADC1->CR2.bits.DDS = 1;                                 // 连续DMA请求
+    ADC1->CR2.bits.DMA = 1;                                 // 开启DMA
+    ADC1->CR2.bits.ADON = 1;                                // 开启ADC
+    ADC1->CR2.bits.SWSTART = 1;                             // 开始转换
+}
+
+uint16 adcbuf[2];
 uint8 gUartByte = 0;
-
 void USART1_IRQHandler(void) {
     if (0 != USART1->SR.bits.RXNE) {
         gUartByte = USART1->DR.bits.byte;
@@ -114,12 +79,8 @@ int main(void) {
     usart1_init(115200);
     USART1->CR1.bits.RXNEIE = 1; // 开启接收中断
 
-    tim8_ch1_pwmio();
-    tim8_ch1_pwm();
-    tim1_init();
-
-    TIM8->CCR1 = 100;
-
+    adc_init(adcbuf);
+    
     config_interruts();
     
     uart_send_bytes(USART1, "wuhaha\r\n", 8);
@@ -127,11 +88,11 @@ int main(void) {
     while (1) {
         switch (gUartByte) {
         case 'a':
-            uart_send_bytes(USART1, (uint8*)&gDuring, 4);
+            uart_send_bytes(USART1, (uint8*)&adcbuf[0], 2);
             gUartByte = 0;
             break;
         case 'A':
-            uart_send_bytes(USART1, (uint8*)&gDuty, 4);
+            uart_send_bytes(USART1, (uint8*)&adcbuf[1], 2);
             gUartByte = 0;
             break;
         }

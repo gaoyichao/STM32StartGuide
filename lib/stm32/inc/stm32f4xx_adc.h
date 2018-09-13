@@ -321,6 +321,10 @@ union adc_csr {
 #define ADC_Prescaler_Div6      0x2
 #define ADC_Prescaler_Div8      0x3
 
+#define ADC_DMA_Mode0   0x0
+#define ADC_DMA_Mode1   0x1
+#define ADC_DMA_Mode2   0x2
+#define ADC_DMA_Mode3   0x3
 
 struct adc_ccr_bits {
     uint32 MULTI : 5;
