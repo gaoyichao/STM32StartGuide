@@ -56,7 +56,7 @@ void sdio_config_dma_rx(uint32 *dbuf, uint32 bufsize) {
     DMA2->LIFCR.bits.HTIF3 = 1;
     DMA2->LIFCR.bits.TCIF3 = 1;
     DMA2_Stream3->CR.bits.EN = 0;
-    DMA_ResetStream(DMA2_Stream3);
+    dma_reset_stream(DMA2_Stream3);
     // 
     DMA2_Stream3->CR.bits.CHSEL = 4;            // 通道选择
     DMA2_Stream3->CR.bits.DIR = DMA_DIR_P2M;    // 传输方向
@@ -90,7 +90,7 @@ void sdio_config_dma_tx(const uint32 *dbuf, uint32 bufsize) {
     DMA2->LIFCR.bits.HTIF3 = 1;
     DMA2->LIFCR.bits.TCIF3 = 1;
     DMA2_Stream3->CR.bits.EN = 0;
-    DMA_ResetStream(DMA2_Stream3);
+    dma_reset_stream(DMA2_Stream3);
     // 
     DMA2_Stream3->CR.bits.CHSEL = 4;            // 通道选择
     DMA2_Stream3->CR.bits.DIR = DMA_DIR_M2P;    // 传输方向
