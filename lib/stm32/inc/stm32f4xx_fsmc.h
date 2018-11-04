@@ -67,6 +67,12 @@ union fsmc_bcr {
     struct fsmc_bcr_bits bits;
     uint32 all;
 };
+
+#define FSMC_BTR_ACCMOD_A 0
+#define FSMC_BTR_ACCMOD_B 1
+#define FSMC_BTR_ACCMOD_C 2
+#define FSMC_BTR_ACCMOD_D 3
+
 struct fsmc_btr_bits {
     // 地址建立时间,x个HCLK周期
     uint32 ADDSET : 4;
