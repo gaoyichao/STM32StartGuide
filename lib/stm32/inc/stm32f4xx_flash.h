@@ -3,12 +3,79 @@
 
 #include <types.h>
 
+
+/*
+ * FLASH密钥寄存器 FLASH_KEYR
+ * 偏移地址: 0x04
+ * 复位值: 0x0000 0000
+ * 访问: 无等待状态, word访问
+ */
+#define FLASH_KEYR_KEY1         ((uint32)0x45670123)
+#define FLASH_KEYR_KEY2         ((uint32)0xCDEF89AB)
+
+/*
+ * FLASH状态寄存器 FLASH_SR
+ * 偏移地址: 0x0C
+ * 复位值: 0x0000 0000
+ * 访问: 无等待状态, word/half-word/byte访问
+ */
+struct flash_sr_bits {
+    uint32 EOP : 1;     /* End Of oPeration */
+    uint32 OPERR : 1;   /* OPeration  ERRor */
+    uint32 r2_3: 2;
+    uint32 WRPERR : 1;  /* WRite Protection ERRor */
+    uint32 PAGERR : 1;  /* ProGramming Alignment ERRor */
+    uint32 PGPERR : 1;  /* ProGramming Parallelism ERRor */
+    uint32 PGSERR : 1;  /* ProGramming Sequence ERRor */
+    uint32 r8_15 : 8;
+    uint32 BSY : 1;     /* Busy, 有操作正在进行 */
+    uint32 r17_31 : 15;
+};
+
+union flash_sr {
+    struct flash_sr_bits bits;
+    uint32 all;
+}; 
+
+/*
+ * FLASH控制寄存器 FLASH_CR
+ * 偏移地址: 0x10
+ * 复位值: 0x8000 0000
+ * 访问: 无Flash操作时无等待状态, word/half-word/byte访问
+ */
+#define FLASH_CR_PSIZE_X8   (0)
+#define FLASH_CR_PSIZE_X16  (1)
+#define FLASH_CR_PSIZE_X32  (2)
+#define FLASH_CR_PSIZE_X64  (3)
+
+struct flash_cr_bits {
+    uint32 PG : 1;      /* ProGramming activated */
+    uint32 SER : 1;     /* Sector ERase activated */
+    uint32 MER : 1;     /* Mess ERase activated */
+    uint32 SNB : 4;     /* 操作Sector Number */
+    uint32 r7 : 1;
+    uint32 PSIZE : 2;   /* 选择编程数据宽度 */
+    uint32 r10_15: 6;
+    uint32 STRT : 1;    /* 触发擦写操作,只能软件置1,当SR.BSY位清除时清除 */
+    uint32 r17_23 : 7;
+    uint32 EOIPE : 1;   /* 使能End Of Operation中断 */
+    uint32 ERRIE : 1;   /* 使能错误中断 */
+    uint32 r26_30: 5;
+    uint32 LOCK : 1;    /* 写1锁定CR */
+};
+union flash_cr {
+    struct flash_cr_bits bits;
+    uint32 all;
+};
+
+
+
 typedef struct flash_regs {
     volatile uint32 ACR;      /* FLASH访问控制寄存器,开关各种访问加速功能,配置等待周期, offset: 0x00 */
     volatile uint32 KEYR;     /* FLASH密钥寄存器,用于对解锁对控制寄存器的访问,进而执行编程和擦写操作, offset: 0x04 */
     volatile uint32 OPTKEYR;  /* FLASH选项密钥寄存器,可以在用户配置扇区中进行编程和擦写操作, offset: 0x08 */
-    volatile uint32 SR;       /* FLASH状态寄存器, 提供正在执行的编程和擦写操作的执行信息, offset: 0x0C */
-    volatile uint32 CR;       /* FLASH控制寄存器, 配置和启动Flash操作, offset: 0x10 */
+    volatile union flash_sr SR;       /* FLASH状态寄存器, 提供正在执行的编程和擦写操作的执行信息, offset: 0x0C */
+    volatile union flash_cr CR;       /* FLASH控制寄存器, 配置和启动Flash操作, offset: 0x10 */
     volatile uint32 OPTCR;    /* FLASH选项控制寄存器, 修改用户选项字节, offset: 0x14 */
 } flash_regs_t;
 
@@ -42,15 +109,6 @@ typedef struct flash_regs {
 #define FLASH_ACR_DCRST         ((uint32)0x00000100)    /* Data Cache reset, 只在关闭了数据缓存的时候才可以写入 */
 
 /*
- * FLASH密钥寄存器 FLASH_KEYR
- * 偏移地址: 0x04
- * 复位值: 0x0000 0000
- * 访问: 无等待状态, word访问
- */
-#define FLASH_KEYR_KEY1         ((uint32)0x45670123)
-#define FLASH_KEYR_KEY2         ((uint32)0xCDEF89AB)
-
-/*
  * FLASH选项密钥寄存器 FLASH_OPTKEYR
  * 偏移地址: 0x08
  * 复位值: 0x0000 0000
@@ -58,57 +116,6 @@ typedef struct flash_regs {
  */
 #define FLASH_OPTKEYR_KEY1         ((uint32)0x08192A3B)
 #define FLASH_OPTKEYR_KEY2         ((uint32)0x4C5D6E7F)
-
-/*
- * FLASH状态寄存器 FLASH_SR
- * 偏移地址: 0x0C
- * 复位值: 0x0000 0000
- * 访问: 无等待状态, word/half-word/byte访问
- */
-#define FLASH_SR_RESET_VALUE        ((uint32)0x00000000)
-#define FLASH_SR_EOP                ((uint32)0x00000001)    /* End Of oPeration */
-#define FLASH_SR_OPERR              ((uint32)0x00000002)    /* OPeration  ERRor */
-#define FLASH_SR_WRPERR             ((uint32)0x00000010)    /* WRite Protection ERRor */
-#define FLASH_SR_PGAERR             ((uint32)0x00000020)    /* ProGramming Alignment ERRor */
-#define FLASH_SR_PGPERR             ((uint32)0x00000040)    /* ProGramming Parallelism ERRor */
-#define FLASH_SR_PGSERR             ((uint32)0x00000080)    /* ProGramming Sequence ERRor */
-#define FLASH_SR_BSY                ((uint32)0x00000100)    /* Busy, 有操作正在进行 */
-
-/*
- * FLASH控制寄存器 FLASH_CR
- * 偏移地址: 0x10
- * 复位值: 0x8000 0000
- * 访问: 无Flash操作时无等待状态, word/half-word/byte访问
- */
-#define FLASH_CR_RESET_VALUE        ((uint32)0x80000000)
-#define FLASH_CR_PG                 ((uint32)0x00000001)    /* ProGramming activated */
-#define FLASH_CR_SER                ((uint32)0x00000002)    /* Sector ERase activated */
-#define FLASH_CR_MER                ((uint32)0x00000004)    /* Mess ERase activated */
-
-#define FLASH_CR_SNB                ((uint32)0x00000078)    /* Sector Number */
-#define FLASH_CR_SNB_0              ((uint32)0x00000000)    /* Sector 0 */
-#define FLASH_CR_SNB_1              ((uint32)0x00000008)    /* Sector 1 */
-#define FLASH_CR_SNB_2              ((uint32)0x00000010)    /* Sector 2 */
-#define FLASH_CR_SNB_3              ((uint32)0x00000018)    /* Sector 3 */
-#define FLASH_CR_SNB_4              ((uint32)0x00000020)    /* Sector 4 */
-#define FLASH_CR_SNB_5              ((uint32)0x00000028)    /* Sector 5 */
-#define FLASH_CR_SNB_6              ((uint32)0x00000030)    /* Sector 6 */
-#define FLASH_CR_SNB_7              ((uint32)0x00000038)    /* Sector 7 */
-#define FLASH_CR_SNB_8              ((uint32)0x00000040)    /* Sector 8 */
-#define FLASH_CR_SNB_9              ((uint32)0x00000048)    /* Sector 9 */
-#define FLASH_CR_SNB_a              ((uint32)0x00000050)    /* Sector 10 */
-#define FLASH_CR_SNB_b              ((uint32)0x00000058)    /* Sector 11 */
-
-#define FLASH_CR_PSIZE              ((uint32)0x00000300)    /* 选择编程数据宽度 */
-#define FLASH_CR_PSIZE_X8           ((uint32)0x00000000)
-#define FLASH_CR_PSIZE_X16          ((uint32)0x00000100)
-#define FLASH_CR_PSIZE_X32          ((uint32)0x00000200)
-#define FLASH_CR_PSIZE_X64          ((uint32)0x00000300)
-
-#define FLASH_CR_STRT               ((uint32)0x00010000)    /* 触发擦写操作,只能软件置1,当SR.BSY位清除时清除 */
-#define FLASH_CR_EOPIE              ((uint32)0x01000000)    /* 使能End Of Operation中断 */
-#define FLASH_CR_ERRIE              ((uint32)0x02000000)    /* 使能错误中断 */
-#define FLASH_CR_LOCK               ((uint32)0x80000000)    /* 写1锁定CR */
 
 /*
  * FLASH选项控制寄存器 FLASH_OPTCR
@@ -137,5 +144,23 @@ typedef struct flash_regs {
 #define FLASH_OPTCR_RDP_Lev2        ((uint32)0x0000CC00)    /* chip read protection active */
 
 #define FLASH_OPTCR_nWRP            ((uint32)0x0FFF0000)    /* 对应位写1关闭sector的写保护 */
+
+
+
+void flash_unlock(void);
+void flash_lock(void);
+
+#define flash_read_byte(addr)       (*(volatile uint8*)addr)
+#define flash_read_halfword(addr)   (*(volatile uint16*)addr)
+#define flash_read_word(addr)       (*(volatile uint32*)addr)
+void flash_read_bytes(uint32 addr, uint8 *buf, uint32 len);
+
+void flash_write_byte(uint32 addr, uint8 data);
+void flash_write_halfword(uint32 addr, uint16 data);
+void flash_write_word(uint32 addr, uint32 data);
+
+void flash_mass_erase(void);
+void flash_sector_erase(uint8 sector);
+
 #endif
 
