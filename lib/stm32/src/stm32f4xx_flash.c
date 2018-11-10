@@ -80,6 +80,7 @@ void flash_mass_erase(void)
 {
     while (1 == FLASH->SR.bits.BSY);
     
+    FLASH->CR.bits.PSIZE = FLASH_CR_PSIZE_X8;
     FLASH->CR.bits.MER = 1;
     FLASH->CR.bits.STRT = 1;
     
@@ -90,6 +91,7 @@ void flash_sector_erase(uint8 sector)
 {
     while (1 == FLASH->SR.bits.BSY);
     
+    FLASH->CR.bits.PSIZE = FLASH_CR_PSIZE_X8;
     FLASH->CR.bits.SNB = sector;
     FLASH->CR.bits.SER = 1;
     FLASH->CR.bits.STRT = 1;

@@ -477,6 +477,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\lib\stm32\src\stm32f4xx_sdio.c</FilePath>
             </File>
+            <File>
+              <FileName>stm32f4xx_flash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\lib\stm32\src\stm32f4xx_flash.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
