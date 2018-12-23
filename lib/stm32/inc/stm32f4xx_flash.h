@@ -145,6 +145,23 @@ typedef struct flash_regs {
 
 #define FLASH_OPTCR_nWRP            ((uint32)0x0FFF0000)    /* 对应位写1关闭sector的写保护 */
 
+/******************************************************************************/
+
+#define FLASH_Sector_Start_0        ((uint32)0x08000000)
+#define FLASH_Sector_Start_1        ((uint32)0x08004000)
+#define FLASH_Sector_Start_2        ((uint32)0x08008000)
+#define FLASH_Sector_Start_3        ((uint32)0x0800C000)
+#define FLASH_Sector_Start_4        ((uint32)0x08010000)
+#define FLASH_Sector_Start_5        ((uint32)0x08020000)
+#define FLASH_Sector_Start_6        ((uint32)0x08040000)
+#define FLASH_Sector_Start_7        ((uint32)0x08060000)
+#define FLASH_Sector_Start_8        ((uint32)0x08080000)
+#define FLASH_Sector_Start_9        ((uint32)0x080A0000)
+#define FLASH_Sector_Start_10       ((uint32)0x080C0000)
+#define FLASH_Sector_Start_11       ((uint32)0x080E0000)
+
+extern const uint32 flash_sector_start_addr[12];
+/******************************************************************************/
 
 
 void flash_unlock(void);

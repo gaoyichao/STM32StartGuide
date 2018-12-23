@@ -55,7 +55,7 @@ BOOL i2c_check_status(i2c_regs_t *i2c, uint32 sr) {
     tmp.half_word[0] = i2c->SR1.all;
     tmp.half_word[1] = i2c->SR2.all;
     tmp.word = tmp.word & FLAG_MASK;
-    return ((sr & tmp.word) == sr) ? TRUE : FALSE;
+    return ((sr & tmp.word) == sr) ? True : False;
 }
 /*
  * i2c_read_byte - 读取一个字节
@@ -83,29 +83,29 @@ void i2c_read_bytes(i2c_regs_t *i2c, uint8 addr, uint8 reg, uint8 len, uint8 *bu
     while (1 == i2c->SR2.bits.BUSY);
     // 产生START,进入Master模式
     i2c->CR1.bits.START = 1;
-    while (TRUE != i2c_check_status(i2c, I2C_STA_BUSY_MSL_SB));
+    while (True != i2c_check_status(i2c, I2C_STA_BUSY_MSL_SB));
     // 发送7位地址, 发送模式
     i2c->DR = (addr << 1) | I2C_DIRECTION_TX;
-    while (TRUE != i2c_check_status(i2c, I2C_STA_BUSY_MSL_ADDR_TXE_TRA));
+    while (True != i2c_check_status(i2c, I2C_STA_BUSY_MSL_ADDR_TXE_TRA));
     // 发送寄存器地址
     i2c->DR = reg;
-    while (TRUE != i2c_check_status(i2c, I2C_STA_BUSY_MSL_TXE_TRA_BTF));
+    while (True != i2c_check_status(i2c, I2C_STA_BUSY_MSL_TXE_TRA_BTF));
     // 重新产生起始位, 进入Master Receiver模式
     i2c->CR1.bits.START = 1;
-    while (TRUE != i2c_check_status(i2c, I2C_STA_BUSY_MSL_SB));
+    while (True != i2c_check_status(i2c, I2C_STA_BUSY_MSL_SB));
     i2c->DR = (addr << 1) | I2C_DIRECTION_RX;
-    while (TRUE != i2c_check_status(i2c, I2C_STA_BUSY_MSL_ADDR));
+    while (True != i2c_check_status(i2c, I2C_STA_BUSY_MSL_ADDR));
     // 依次接收字节,每次接收都需要返回一个ACK
     i2c->CR1.bits.ACK = 1;
     while (len > 1) {
-        while (TRUE != i2c_check_status(i2c, I2C_STA_BUSY_MSL_RXNE));
+        while (True != i2c_check_status(i2c, I2C_STA_BUSY_MSL_RXNE));
         buf[0] = i2c->DR;
         buf++; len--;
     }
     // 读最后一个字节,所以返回NACK
     i2c->CR1.bits.ACK = 0;
     i2c->CR1.bits.STOP = 1;
-    while (TRUE != i2c_check_status(i2c, I2C_STA_BUSY_MSL_RXNE));
+    while (True != i2c_check_status(i2c, I2C_STA_BUSY_MSL_RXNE));
     buf[0] = i2c->DR;
 
     i2c->CR1.bits.ACK = 1;
@@ -135,17 +135,17 @@ void i2c_write_bytes(i2c_regs_t *i2c, uint8 addr, uint8 reg, uint8 len, const ui
     while (1 == i2c->SR2.bits.BUSY);
     // 产生START,进入Master模式
     i2c->CR1.bits.START = 1;
-    while (TRUE != i2c_check_status(i2c, I2C_STA_BUSY_MSL_SB));
+    while (True != i2c_check_status(i2c, I2C_STA_BUSY_MSL_SB));
     // 发送7位地址, 发送模式
     i2c->DR = (addr << 1) | I2C_DIRECTION_TX;
-    while (TRUE != i2c_check_status(i2c, I2C_STA_BUSY_MSL_ADDR_TXE_TRA));
+    while (True != i2c_check_status(i2c, I2C_STA_BUSY_MSL_ADDR_TXE_TRA));
     // 发送寄存器地址
     i2c->DR = reg;
-    while (TRUE != i2c_check_status(i2c, I2C_STA_BUSY_MSL_TXE_TRA_BTF));
+    while (True != i2c_check_status(i2c, I2C_STA_BUSY_MSL_TXE_TRA_BTF));
     // 发送数据
     while (len--) {
         i2c->DR = buf[0];
-        while (TRUE != i2c_check_status(i2c, I2C_STA_BUSY_MSL_TXE_TRA_BTF));
+        while (True != i2c_check_status(i2c, I2C_STA_BUSY_MSL_TXE_TRA_BTF));
         buf++;
     }
 

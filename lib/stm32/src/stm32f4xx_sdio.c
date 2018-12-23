@@ -41,11 +41,11 @@ void sdio_config_data(union sdio_dctrl dctrl, uint32 timeout, uint32 dlen) {
  */
 void sdio_init_clkcr(uint8 clkdiv, uint8 buswid) {
     SDIO->CLKCR.bits.CLKDIV = clkdiv;
-    SDIO->CLKCR.bits.NEGEDGE = FALSE;
-    SDIO->CLKCR.bits.BYPASS = FALSE;
-    SDIO->CLKCR.bits.PWRSAV = FALSE;
+    SDIO->CLKCR.bits.NEGEDGE = False;
+    SDIO->CLKCR.bits.BYPASS = False;
+    SDIO->CLKCR.bits.PWRSAV = False;
     SDIO->CLKCR.bits.WIDBUS = buswid;
-    SDIO->CLKCR.bits.HWFC_EN = FALSE;
+    SDIO->CLKCR.bits.HWFC_EN = False;
 }
 
 void sdio_config_dma_rx(uint32 *dbuf, uint32 bufsize) {

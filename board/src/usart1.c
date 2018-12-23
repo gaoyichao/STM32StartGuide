@@ -1,8 +1,17 @@
 #include <stm32f407.h>
 #include <usart1.h>
+#include <queue.int.h>
+#include <utils.h>
 
-uint8 _usart1_is_sending = 0;
-uint8 _usart1_received_datas = 0;
+int board_lock(void);
+void board_unlock(int key);
+
+#define CFG_UART1_BUF_SIZE 1024
+#define CFG_UART_RECV_TIMEOUT 1000
+
+uint8 gUsart1Buf[CFG_UART1_BUF_SIZE];
+queue_uint8 gUsart1Queue;
+
 /*
  * usart1_init - 初始化串口
  */
@@ -25,79 +34,48 @@ void usart1_init(uint32 baudrate) {
     
     RCC->APB2ENR.bits.usart1 = 1;
     uart_init(USART1, baudrate);
+    
+    queue_uint8_init(&gUsart1Queue, gUsart1Buf, CFG_UART1_BUF_SIZE);
 }
 
-void usart1_init_dma(void) {
-    RCC->AHB1ENR.bits.dma2 = 1;
-    // 发送DMA
-    dma_reset_stream(DMA2_Stream7);
-    DMA2_Stream7->CR.bits.CHSEL = 4;                // 通道选择
-    DMA2_Stream7->CR.bits.DIR = DMA_DIR_M2P;        // 传输方向
-    DMA2_Stream7->CR.bits.CIRC = 0;                 // 关闭循环模式
-    DMA2_Stream7->CR.bits.PL = DMA_Priority_Low;    // 低优先级
-    DMA2_Stream7->CR.bits.PINC = 0;                 // 外设地址不增长
-    DMA2_Stream7->CR.bits.PSIZE = DMA_PSIZE_8Bits;  // 外设数据宽度
-    DMA2_Stream7->CR.bits.MINC = 1;                 // 内存增长
-    DMA2_Stream7->CR.bits.MSIZE = DMA_PSIZE_8Bits;  // 内存数据宽度
-    DMA2_Stream7->CR.bits.MBURST = DMA_Burst_0;     // Single Transfer
-    DMA2_Stream7->CR.bits.PBURST = DMA_Burst_0;     // Single Transfer
-    DMA2_Stream7->FCR.bits.DMDIS = 0;               // 保持Direct Mode
-    DMA2_Stream7->FCR.bits.FTH = DMA_FIFO_4;
-    DMA2_Stream7->PAR = (uint32)(&(USART1->DR));
-    DMA2_Stream7->CR.bits.TCIE = 1;
-    // 接收DMA
-    dma_reset_stream(DMA2_Stream5);
-    DMA2_Stream5->CR.bits.CHSEL = 4;                // 通道选择
-    DMA2_Stream5->CR.bits.DIR = DMA_DIR_P2M;        // 传输方向
-    DMA2_Stream5->CR.bits.CIRC = 0;                 // 关闭循环模式
-    DMA2_Stream5->CR.bits.PL = DMA_Priority_Low;    // 低优先级
-    DMA2_Stream5->CR.bits.PINC = 0;                 // 外设地址不增长
-    DMA2_Stream5->CR.bits.PSIZE = DMA_PSIZE_8Bits;  // 外设数据宽度
-    DMA2_Stream5->CR.bits.MINC = 1;                 // 内存增长
-    DMA2_Stream5->CR.bits.MSIZE = DMA_PSIZE_8Bits;  // 内存数据宽度
-    DMA2_Stream5->CR.bits.MBURST = DMA_Burst_0;     // Single Transfer
-    DMA2_Stream5->CR.bits.PBURST = DMA_Burst_0;     // Single Transfer
-    DMA2_Stream5->FCR.bits.DMDIS = 0;               // 保持Direct Mode
-    DMA2_Stream5->FCR.bits.FTH = DMA_FIFO_4;
-    DMA2_Stream5->PAR = (uint32)(&(USART1->DR));
-    DMA2_Stream5->CR.bits.TCIE = 1;
-}
-
-void usart1_send_bytes_dma(uint8 *buf, int len) {
-    while (_usart1_is_sending);
-    
-    _usart1_is_sending = 1;
-    
-    DMA2_Stream7->CR.bits.EN = 0;
-    DMA2_Stream7->M0AR = (uint32)buf;
-    DMA2_Stream7->NDTR.all = len;
-    DMA2_Stream7->CR.bits.EN = 1;
-    
-    USART1->CR3.bits.DMAT = 1;
-}
-
-void usart1_receive_bytes_dma(uint8 *buf, int len) {
-    DMA2_Stream5->CR.bits.EN = 0;
-    DMA2_Stream5->M0AR = (uint32)buf;
-    DMA2_Stream5->NDTR.all = len;
-    DMA2_Stream5->CR.bits.EN = 1;
-    
-    USART1->CR3.bits.DMAR = 1;
-}
-
-void DMA2_Stream5_IRQHandler(void) {
-    if (1 == DMA2->HISR.bits.TCIF5) {
-        DMA2->HIFCR.bits.TCIF5 = 1;
-        USART1->CR3.bits.DMAR = 0;
-        _usart1_received_datas = 1;
+void USART1_IRQHandler(void) {
+    if (0 != USART1->SR.bits.RXNE) {
+        queue_uint8_enqueue(&gUsart1Queue, USART1->DR.bits.byte);
     }
 }
 
-void DMA2_Stream7_IRQHandler(void) {
-    if (1 == DMA2->HISR.bits.TCIF7) {
-        DMA2->HIFCR.bits.TCIF7 = 1;
-        USART1->CR3.bits.DMAT = 0;
-        _usart1_is_sending = 0;
+BOOL usart1_ready_read(void) {
+    return !queue_uint8_empty(&gUsart1Queue);
+}
+
+BOOL usart1_rsv_byte(uint8 *buf) {
+    uint32 times = 0;
+    int primask;
+    BOOL re;
+    
+    while (1) {
+        if (times > CFG_UART_RECV_TIMEOUT)
+            return False;
+        
+        primask = board_lock();
+        re = queue_uint8_dequeue(&gUsart1Queue, buf);
+        board_unlock(primask);
+        
+        if (True == re)
+            return True;
+        
+        times++;
     }
 }
+
+int usart1_buf_count(void) {
+    int primask, count;
+
+    primask = board_lock();
+    count = queue_uint8_count(&gUsart1Queue);
+    board_unlock(primask);
+    
+    return count;
+}
+
 

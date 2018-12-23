@@ -21,16 +21,16 @@ typedef unsigned long long const ucint64;
 
 typedef unsigned char   BOOL;
 
-#ifndef TRUE
-#define TRUE 1
+#ifndef True
+#define True 1
 #endif
 
-#ifndef FALSE
-#define FALSE 0
+#ifndef False
+#define False 0
 #endif
 
-#ifndef NULL
-#define NULL 0
+#ifndef Null
+#define Null 0
 #endif
 
 #define U8Bit(n)    ((uint8)(1 << n))

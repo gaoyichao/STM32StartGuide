@@ -392,7 +392,7 @@ static enum SD_Error sdio_init_card(struct sd_card *card) {
     else
         return e;
 
-    BOOL ready = FALSE;
+    BOOL ready = False;
     uint32 count = 0, res = 0;
     while (!ready && (count < SD_MAX_VOLT_TRIAL)) {
         e = sdio_cmd55(card, 0);
@@ -402,7 +402,7 @@ static enum SD_Error sdio_init_card(struct sd_card *card) {
         if (SDE_OK != e)
             return e;
         res = SDIO->RESP1;
-        ready = (((res >> 31) == 1) ? TRUE : FALSE);
+        ready = (((res >> 31) == 1) ? True : False);
         count++;
     }
 

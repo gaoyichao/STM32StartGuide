@@ -1,6 +1,20 @@
 #include <stm32f4xx_flash.h>
 #include <stm32f407.h>
 
+const uint32 flash_sector_start_addr[12] = {
+    FLASH_Sector_Start_0,
+    FLASH_Sector_Start_1,
+    FLASH_Sector_Start_2,
+    FLASH_Sector_Start_3,
+    FLASH_Sector_Start_4,
+    FLASH_Sector_Start_5,
+    FLASH_Sector_Start_6,
+    FLASH_Sector_Start_7,
+    FLASH_Sector_Start_8,
+    FLASH_Sector_Start_9,
+    FLASH_Sector_Start_10,
+    FLASH_Sector_Start_11
+};
 /*
  * flash_unlock - ½âËøflash¿ØÖÆ¼Ä´æÆ÷·ÃÎÊ
  */

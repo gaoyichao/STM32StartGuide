@@ -1,62 +1,51 @@
 #include <stm32f407.h>
 #include <led.h>
 #include <usart1.h>
-#include <sdio.h>
-#include <utils.h>
+#include <iap_hex.h>
 
-uint8 readbuf[128];
-uint8 writebuf[128];
+void config_interruts(void);
 
-int main(void) {
-    for (int i = 0; i < 128; i++)
-        writebuf[i] = i;
+#define BOOT_FLASH_START_ADDR 0x08000000
+#define APP_FLASH_START_ADDR 0x08004000
+
+void board_set_msp(uint32 msp);
+
+void bootloader_jump(void) {
+    uint32 msp = *(uint32 *)(APP_FLASH_START_ADDR);
+    uint32 reset = *(uint32 *)(APP_FLASH_START_ADDR+4);
     
-    flash_read_bytes(0x08060000, readbuf, 128);
-    if (0x00 != readbuf[0]) {
-        flash_unlock();
-        flash_write_byte(0x08060000, 0);
-        flash_lock();
-        
-        flash_read_bytes(0x08060000, readbuf, 128);
-    }
     
-    if (0x00 != readbuf[1]) {
-        flash_unlock();
-        flash_write_halfword(0x08060000, 0);
-        flash_lock();
+    if((msp & 0x2FFE0000) == 0x20000000) {	
+        SCB->VTOR = 0x08004000;
         
-        flash_read_bytes(0x08060000, readbuf, 128);
+        uart_send_bytes(USART1, "Jumping......\r\n", 15);
+
+        board_set_msp(msp);
+        ((void (*)())(reset))();
     }
 
-    if (0x00 != readbuf[2]) {
-        flash_unlock();
-        flash_write_word(0x08060000, 0);
-        flash_lock();
-        
-        flash_read_bytes(0x08060000, readbuf, 128);
-    }
-    
-    if (0x00 != readbuf[4]) {
-        flash_unlock();
-        flash_write_word(0x08060004, 0x03020100);
-        flash_lock();
-        
-        flash_read_bytes(0x08060000, readbuf, 128);
-    }
-//    
-//    flash_unlock();
-//    flash_sector_erase(7);
-//    flash_lock();
-//    
-//    flash_read_bytes(0x08000000, readbuf, 128);
-//    flash_read_bytes(0x08060000, readbuf, 128);
-//    
-    while (1) {
-
-    }
 }
 
 
 
+int main(void) {
+    usart1_init(115200);
+    config_interruts();
+    uart_send_bytes(USART1, "BootLoader\r\n", 12);
 
+    uint8 cmd;
+    while (1) {
+        if (!usart1_rsv_byte(&cmd))
+            continue;
+        uart_send_byte(USART1, cmd);
 
+        switch (cmd) {
+        case 'A':
+            bootloader_jump();
+            break;
+        case 'B':
+            IapHex_Update(&gIapHexParser);
+            break;
+        }
+    }
+}

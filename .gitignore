@@ -7,4 +7,11 @@
 /pro/Particle/Objects
 /pro/Particle/*.uvoptx
 /pro/Particle/*.uvguix.*
+
+/pro/Test/DebugConfig
+/pro/Test/Listings
+/pro/Test/Objects
+/pro/Test/*.uvoptx
+/pro/Test/*.uvguix.*
+
 *.TMP
