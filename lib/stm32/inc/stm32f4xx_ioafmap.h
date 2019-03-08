@@ -17,6 +17,7 @@
 
 #define GPIO_AF_USART1  0x07
 #define GPIO_AF_USART3  0x07
+#define GPIO_AF_CAN1    0x09
 
 #define GPIO_AF_UART4   0x08
 

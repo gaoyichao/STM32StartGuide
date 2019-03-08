@@ -8,6 +8,7 @@
 #include <cortex_m4.h>
 
 #include <stm32f4xx_adc.h>
+#include <stm32f4xx_can.h>
 #include <stm32f4xx_dcmi.h>
 #include <stm32f4xx_dma.h>
 #include <stm32f4xx_exti.h>

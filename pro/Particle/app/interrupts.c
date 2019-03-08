@@ -6,4 +6,10 @@ void config_interruts(void) {
     
     NVIC->IPR.bits.USART1_Irq = 0x80;
     NVIC->ISER.bits.USART1_Irq = 1;
+    
+    NVIC->IPR.bits.CAN1_RX0_Irq = 0x80;
+    NVIC->ISER.bits.CAN1_RX0_Irq = 1;
+
+    NVIC->IPR.bits.CAN1_RX1_Irq = 0x80;
+    NVIC->ISER.bits.CAN1_RX1_Irq = 1;
 }

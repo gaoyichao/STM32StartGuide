@@ -1,17 +1,17 @@
 /***********************************************************
  *
- * stm32f4xx_adc - Ä£Äâ/Êı×Ö×ª»»
+ * stm32f4xx_adc - æ¨¡æ‹Ÿ/æ•°å­—è½¬æ¢
  *
- ************************************** ¸ßÒÒ³¬.2017.0618 ***/
+ ************************************** é«˜ä¹™è¶….2017.0618 ***/
 #pragma once
 
 #include <types.h>
 
 /*
- * ADC×´Ì¬¼Ä´æÆ÷ ADCx_SR
- * Æ«ÒÆµØÖ·: 0x00
- * ¸´Î»Öµ: 0x0000
- * ·ÃÎÊ: ÎŞµÈ´ı×´Ì¬, half-word·ÃÎÊ
+ * ADCçŠ¶æ€å¯„å­˜å™¨ ADCx_SR
+ * åç§»åœ°å€: 0x00
+ * å¤ä½å€¼: 0x0000
+ * è®¿é—®: æ— ç­‰å¾…çŠ¶æ€, half-wordè®¿é—®
  */
 struct adc_sr_bits {
     /* Analog WatchDog flag */
@@ -33,10 +33,10 @@ union adc_sr {
     uint32 all;
 };
 /*
- * ADC¿ØÖÆ¼Ä´æÆ÷1 ADCx_CR1
- * Æ«ÒÆµØÖ·: 0x04
- * ¸´Î»Öµ: 0x0000
- * ·ÃÎÊ: ÎŞµÈ´ı×´Ì¬, half-word·ÃÎÊ
+ * ADCæ§åˆ¶å¯„å­˜å™¨1 ADCx_CR1
+ * åç§»åœ°å€: 0x04
+ * å¤ä½å€¼: 0x0000
+ * è®¿é—®: æ— ç­‰å¾…çŠ¶æ€, half-wordè®¿é—®
  */
 #define ADC_RES_12Bits 0
 #define ADC_RES_10Bits 1
@@ -45,17 +45,17 @@ union adc_sr {
 struct adc_cr1_bits {
     /* Analog WatchDog CHannel select bits */
     uint32 AWDCH : 5;
-    /* EOCÖĞ¶ÏÊ¹ÄÜ */
+    /* EOCä¸­æ–­ä½¿èƒ½ */
     uint32 EOCIE : 1;
-    /* Analog WatchDogÖĞ¶ÏÊ¹ÄÜ */
+    /* Analog WatchDogä¸­æ–­ä½¿èƒ½ */
     uint32 AWDIE : 1;
-    /* JEOCÖĞ¶ÏÊ¹ÄÜ */
+    /* JEOCä¸­æ–­ä½¿èƒ½ */
     uint32 JEOCIE : 1;
-    /* Ê¹ÄÜÉ¨ÃèÄ£Ê½ */
+    /* ä½¿èƒ½æ‰«ææ¨¡å¼ */
     uint32 SCAN : 1;
-    /* 0:Ê¹ÄÜËùÓĞÍ¨µÀµÄAWD, 1:Ê¹ÄÜAWDCHÖ¸¶¨Í¨µÀµÄAWD */
+    /* 0:ä½¿èƒ½æ‰€æœ‰é€šé“çš„AWD, 1:ä½¿èƒ½AWDCHæŒ‡å®šé€šé“çš„AWD */
     uint32 AWDSGL : 1;
-    /* Ê¹ÄÜAutomatic inJected group conversion */
+    /* ä½¿èƒ½Automatic inJected group conversion */
     uint32 JAUTO : 1;
     /* Discontinue mode on regular channels enable */
     uint32 DISCEN : 1;
@@ -64,13 +64,13 @@ struct adc_cr1_bits {
     /* Discontinue mode channel count */
     uint32 DISCNUM : 3;
     uint32 rsv0 : 6;
-    /* Ê¹ÄÜJAWD */
+    /* ä½¿èƒ½JAWD */
     uint32 JAWDEN : 1;
-    /* Ê¹ÄÜAWD */
+    /* ä½¿èƒ½AWD */
     uint32 AWDEN : 1;
-    /* ·Ö±æÂÊ */
+    /* åˆ†è¾¨ç‡ */
     uint32 RES : 2;
-    /* OverrunÖĞ¶ÏÊ¹ÄÜ */
+    /* Overrunä¸­æ–­ä½¿èƒ½ */
     uint32 OVRIE : 1;
     uint32 rsv1 : 5;
 };
@@ -79,10 +79,10 @@ union adc_cr1 {
     uint32 all;
 };
 /*
- * ADC¿ØÖÆ¼Ä´æÆ÷2 ADCx_CR2
- * Æ«ÒÆµØÖ·: 0x08
- * ¸´Î»Öµ: 0x0000
- * ·ÃÎÊ: ÎŞµÈ´ı×´Ì¬, half-word·ÃÎÊ
+ * ADCæ§åˆ¶å¯„å­˜å™¨2 ADCx_CR2
+ * åç§»åœ°å€: 0x08
+ * å¤ä½å€¼: 0x0000
+ * è®¿é—®: æ— ç­‰å¾…çŠ¶æ€, half-wordè®¿é—®
  */
 /* TODO: #define EXTSEL */
 #define ADC_ExtTrigger_Dis             0
@@ -94,32 +94,32 @@ union adc_cr1 {
 #define ADC_Align_Left 1
 
 struct adc_cr2_bits {
-    /* ¿ªÆôAD×ª»» */
+    /* å¼€å¯ADè½¬æ¢ */
     uint32 ADON : 1;
-    /* Á¬Ğø×ª»»Ä£Ê½¿ªÆô */
+    /* è¿ç»­è½¬æ¢æ¨¡å¼å¼€å¯ */
     uint32 CONT : 1;
     uint32 rsv0 : 6;
-    /* ¿ªÆôDMAÄ£Ê½ */
+    /* å¼€å¯DMAæ¨¡å¼ */
     uint32 DMA : 1;
-    /* 1: µ±DMA=1Ê±Ö»Òª×ª»»½áÊø¾Í²úÉúÒ»¸öDMAÇëÇó */
+    /* 1: å½“DMA=1æ—¶åªè¦è½¬æ¢ç»“æŸå°±äº§ç”Ÿä¸€ä¸ªDMAè¯·æ±‚ */
     uint32 DDS : 1;
     /* EOC selection */
     uint32 EOCS : 1;
-    /* 1:×ó¶ÔÆë; 0:ÓÒ¶ÔÆë */
+    /* 1:å·¦å¯¹é½; 0:å³å¯¹é½ */
     uint32 ALIGN : 1;
     uint32 rsv1 : 4;
-    /* injected groupµÄÍâ²¿ĞÅºÅÑ¡Ôñ */
+    /* injected groupçš„å¤–éƒ¨ä¿¡å·é€‰æ‹© */
     uint32 JEXTSEL : 4;
-    /* injected groupµÄÍâ²¿´¥·¢·½Ê½ */
+    /* injected groupçš„å¤–éƒ¨è§¦å‘æ–¹å¼ */
     uint32 JEXTEN : 2;
-    /* injected channels¿ªÊ¼×ª»»,Èí¼ş´¥·¢Ó²¼ş¸´Î» */
+    /* injected channelså¼€å§‹è½¬æ¢,è½¯ä»¶è§¦å‘ç¡¬ä»¶å¤ä½ */
     uint32 JSWSTART : 1;
     uint32 rsv2 : 1;
-    /* regular groupµÄÍâ²¿ĞÅºÅÑ¡Ôñ */
+    /* regular groupçš„å¤–éƒ¨ä¿¡å·é€‰æ‹© */
     uint32 EXTSEL : 4;
-    /* regular groupµÄÍâ²¿´¥·¢·½Ê½ */
+    /* regular groupçš„å¤–éƒ¨è§¦å‘æ–¹å¼ */
     uint32 EXTEN : 2;
-    /* regular channels¿ªÊ¼×ª»»,Èí¼ş´¥·¢Ó²¼ş¸´Î» */
+    /* regular channelså¼€å§‹è½¬æ¢,è½¯ä»¶è§¦å‘ç¡¬ä»¶å¤ä½ */
     uint32 SWSTART : 1;
     uint32 rsv3 : 1;
 };
@@ -128,10 +128,10 @@ union adc_cr2 {
     uint32 all;
 };
 /*
- * ADC²ÉÑùÊ±¼ä¼Ä´æÆ÷1 ADCx_SMPR1
- * Æ«ÒÆµØÖ·: 0x0C
- * ¸´Î»Öµ: 0x0000
- * ·ÃÎÊ: ÎŞµÈ´ı×´Ì¬, half-word·ÃÎÊ
+ * ADCé‡‡æ ·æ—¶é—´å¯„å­˜å™¨1 ADCx_SMPR1
+ * åç§»åœ°å€: 0x0C
+ * å¤ä½å€¼: 0x0000
+ * è®¿é—®: æ— ç­‰å¾…çŠ¶æ€, half-wordè®¿é—®
  */
 #define ADC_Sample_Time_3Cycles     0
 #define ADC_Sample_Time_15Cycles    1
@@ -159,10 +159,10 @@ union adc_smpr {
     uint32 all;
 };
 /*
- * ADC regular sequence¼Ä´æÆ÷1 ADCx_SQR1
- * Æ«ÒÆµØÖ·: 0x2C
- * ¸´Î»Öµ: 0x0000
- * ·ÃÎÊ: ÎŞµÈ´ı×´Ì¬, half-word·ÃÎÊ
+ * ADC regular sequenceå¯„å­˜å™¨1 ADCx_SQR1
+ * åç§»åœ°å€: 0x2C
+ * å¤ä½å€¼: 0x0000
+ * è®¿é—®: æ— ç­‰å¾…çŠ¶æ€, half-wordè®¿é—®
  */
 #define ADC_SQR_LOffset 1
 struct adc_sqr1_bits {
@@ -191,10 +191,10 @@ union adc_sqrt23 {
     uint32 all;
 };
 /*
- * ADC injected sequence¼Ä´æÆ÷ ADCx_JSQR
- * Æ«ÒÆµØÖ·: 0x38
- * ¸´Î»Öµ: 0x0000
- * ·ÃÎÊ: ÎŞµÈ´ı×´Ì¬, half-word·ÃÎÊ
+ * ADC injected sequenceå¯„å­˜å™¨ ADCx_JSQR
+ * åç§»åœ°å€: 0x38
+ * å¤ä½å€¼: 0x0000
+ * è®¿é—®: æ— ç­‰å¾…çŠ¶æ€, half-wordè®¿é—®
  */
 struct adc_jsqr_bits {
     uint32 JSQ1 : 5;
@@ -210,42 +210,42 @@ union adc_jsqr {
 };
 
 typedef struct adc_regs {
-    volatile union adc_sr SR;       /* ADC×´Ì¬¼Ä´æÆ÷, offset: 0x00 */
-    volatile union adc_cr1 CR1;     /* ADC¿ØÖÆ¼Ä´æÆ÷1, offset: 0x04 */
-    volatile union adc_cr2 CR2;     /* ADC¿ØÖÆ¼Ä´æÆ÷2, offset: 0x08 */
-    volatile union adc_smpr SMPR1;  /* ADC²ÉÑùÊ±¼ä¼Ä´æÆ÷1, offset: 0x0C */
-    volatile union adc_smpr SMPR2;  /* ADC²ÉÑùÊ±¼ä¼Ä´æÆ÷2, offset: 0x10 */
-    volatile uint32 JOFR1;          /* ADC injected channelÊı¾İÆ«ÒÆ¼Ä´æÆ÷1(12Î»), offset: 0x14 */
-    volatile uint32 JOFR2;          /* ADC injected channelÊı¾İÆ«ÒÆ¼Ä´æÆ÷2(12Î»), offset: 0x18 */
-    volatile uint32 JOFR3;          /* ADC injected channelÊı¾İÆ«ÒÆ¼Ä´æÆ÷3(12Î»), offset: 0x1C */
-    volatile uint32 JOFR4;          /* ADC injected channelÊı¾İÆ«ÒÆ¼Ä´æÆ÷4(12Î»), offset: 0x20 */
-    volatile uint32 HTR;            /* ADC watchdog ÉÏãĞÖµ¼Ä´æÆ÷(12Î»), offset: 0x24 */
-    volatile uint32 LTR;            /* ADC watchdog ÏÂãĞÖµ¼Ä´æÆ÷(12Î»), offset: 0x28 */
+    volatile union adc_sr SR;       /* ADCçŠ¶æ€å¯„å­˜å™¨, offset: 0x00 */
+    volatile union adc_cr1 CR1;     /* ADCæ§åˆ¶å¯„å­˜å™¨1, offset: 0x04 */
+    volatile union adc_cr2 CR2;     /* ADCæ§åˆ¶å¯„å­˜å™¨2, offset: 0x08 */
+    volatile union adc_smpr SMPR1;  /* ADCé‡‡æ ·æ—¶é—´å¯„å­˜å™¨1, offset: 0x0C */
+    volatile union adc_smpr SMPR2;  /* ADCé‡‡æ ·æ—¶é—´å¯„å­˜å™¨2, offset: 0x10 */
+    volatile uint32 JOFR1;          /* ADC injected channelæ•°æ®åç§»å¯„å­˜å™¨1(12ä½), offset: 0x14 */
+    volatile uint32 JOFR2;          /* ADC injected channelæ•°æ®åç§»å¯„å­˜å™¨2(12ä½), offset: 0x18 */
+    volatile uint32 JOFR3;          /* ADC injected channelæ•°æ®åç§»å¯„å­˜å™¨3(12ä½), offset: 0x1C */
+    volatile uint32 JOFR4;          /* ADC injected channelæ•°æ®åç§»å¯„å­˜å™¨4(12ä½), offset: 0x20 */
+    volatile uint32 HTR;            /* ADC watchdog ä¸Šé˜ˆå€¼å¯„å­˜å™¨(12ä½), offset: 0x24 */
+    volatile uint32 LTR;            /* ADC watchdog ä¸‹é˜ˆå€¼å¯„å­˜å™¨(12ä½), offset: 0x28 */
     volatile union adc_sqr1 SQR1;   /* ADC regular sequence register 1, offset: 0x2C */
     volatile union adc_sqrt23 SQR2; /* ADC regular sequence register 2, offset: 0x30 */
     volatile union adc_sqrt23 SQR3; /* ADC regular sequence register 3, offset: 0x34 */
     volatile union adc_jsqr JSQR;   /* ADC injected sequence register, offset: 0x38*/
-    volatile uint32 JDR1;           /* ADC injected data register 1(16Î»), offset: 0x3C */
-    volatile uint32 JDR2;           /* ADC injected data register 2(16Î»), offset: 0x40 */
-    volatile uint32 JDR3;           /* ADC injected data register 3(16Î»), offset: 0x44 */
-    volatile uint32 JDR4;           /* ADC injected data register 4(16Î»), offset: 0x48 */
-    volatile uint32 DR;             /* ADC regular data register(16Î»), offset: 0x4C */
+    volatile uint32 JDR1;           /* ADC injected data register 1(16ä½), offset: 0x3C */
+    volatile uint32 JDR2;           /* ADC injected data register 2(16ä½), offset: 0x40 */
+    volatile uint32 JDR3;           /* ADC injected data register 3(16ä½), offset: 0x44 */
+    volatile uint32 JDR4;           /* ADC injected data register 4(16ä½), offset: 0x48 */
+    volatile uint32 DR;             /* ADC regular data register(16ä½), offset: 0x4C */
 } adc_regs_t;
 
-/* ADC¼Ä´æÆ÷µØÖ·Ó³Éä */
+/* ADCå¯„å­˜å™¨åœ°å€æ˜ å°„ */
 #define ADC1_BASE 0x40012000
 #define ADC2_BASE 0x40012100
 #define ADC3_BASE 0x40012200
-/* ADC¼Ä´æÆ÷Ö¸Õë·ÃÎÊ */
+/* ADCå¯„å­˜å™¨æŒ‡é’ˆè®¿é—® */
 #define ADC1 ((adc_regs_t *) ADC1_BASE)
 #define ADC2 ((adc_regs_t *) ADC2_BASE)
 #define ADC3 ((adc_regs_t *) ADC3_BASE)
 
 /*
- * ADCÍ¨ÓÃ×´Ì¬¼Ä´æÆ÷ ADC_CSR
- * Æ«ÒÆµØÖ·: ADC1_BASE + 0x300
- * ¸´Î»Öµ: 0x0000
- * ·ÃÎÊ: ÎŞµÈ´ı×´Ì¬, half-word·ÃÎÊ
+ * ADCé€šç”¨çŠ¶æ€å¯„å­˜å™¨ ADC_CSR
+ * åç§»åœ°å€: ADC1_BASE + 0x300
+ * å¤ä½å€¼: 0x0000
+ * è®¿é—®: æ— ç­‰å¾…çŠ¶æ€, half-wordè®¿é—®
  */
 struct adc_csr_bits {
     uint32 AWD1 : 1;
@@ -278,10 +278,10 @@ union adc_csr {
     uint32 all;
 };
 /*
- * ADCÍ¨ÓÃ¿ØÖÆ¼Ä´æÆ÷ ADC_CCR
- * Æ«ÒÆµØÖ·: ADC1_BASE + 0x304
- * ¸´Î»Öµ: 0x0000
- * ·ÃÎÊ: ÎŞµÈ´ı×´Ì¬, half-word·ÃÎÊ
+ * ADCé€šç”¨æ§åˆ¶å¯„å­˜å™¨ ADC_CCR
+ * åç§»åœ°å€: ADC1_BASE + 0x304
+ * å¤ä½å€¼: 0x0000
+ * è®¿é—®: æ— ç­‰å¾…çŠ¶æ€, half-wordè®¿é—®
  */
 #define ADC_Mode_Independent                       0x00
 
@@ -354,14 +354,14 @@ union adc_cdr {
 };
 
 typedef struct adc_com_regs {
-    volatile union adc_csr CSR;    /* ADCÍ¨ÓÃ×´Ì¬¼Ä´æÆ÷, offset: ADC1_BASE + 0x300 */
-    volatile union adc_ccr CCR;    /* ADCÍ¨ÓÃ¿ØÖÆ¼Ä´æÆ÷, offset: ADC1_BASE + 0x304 */
-    volatile union adc_cdr CDR;    /* ADCÍ¨ÓÃregularÊı¾İ¼Ä´æÆ÷for dual AND triple modes, offset: ADC1_BASE + 0x308 */
+    volatile union adc_csr CSR;    /* ADCé€šç”¨çŠ¶æ€å¯„å­˜å™¨, offset: ADC1_BASE + 0x300 */
+    volatile union adc_ccr CCR;    /* ADCé€šç”¨æ§åˆ¶å¯„å­˜å™¨, offset: ADC1_BASE + 0x304 */
+    volatile union adc_cdr CDR;    /* ADCé€šç”¨regularæ•°æ®å¯„å­˜å™¨for dual AND triple modes, offset: ADC1_BASE + 0x308 */
 } adc_com_regs_t;
 
-/* ADCÍ¨ÓÃ¼Ä´æÆ÷µØÖ·Ó³Éä */
+/* ADCé€šç”¨å¯„å­˜å™¨åœ°å€æ˜ å°„ */
 #define ADC_COM_BASE (ADC1_BASE + 0x300)
-/* ADCÍ¨ÓÃ¼Ä´æÆ÷Ö¸Õë·ÃÎÊ */
+/* ADCé€šç”¨å¯„å­˜å™¨æŒ‡é’ˆè®¿é—® */
 #define ADC_COM ((adc_com_regs_t *) ADC_COM_BASE)
 
 
